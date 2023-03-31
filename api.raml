@@ -1,0 +1,134 @@
+#%RAML 1.0
+title: API REST
+baseUri: http://localhost:3000
+mediaType: application/json
+
+/securitySchemes:
+  jwt:
+    description: JSON Web Token authentication scheme
+    type: x-JWT
+    describedBy:
+      headers:
+        Authorization:
+          description: Used to send a JSON Web Token
+          type: string
+          required: true
+    settings:
+      signatures: ['HS256']
+
+/types:
+  user:
+    type: object
+    properties:
+      id:
+        type: string
+        required: true
+      name:
+        type: string
+        required: true
+      lastname:
+        type: string
+        required: true
+      email:
+        type: string
+        required: true
+      pass:
+        type: string
+        required: true
+      address:
+        type: string;
+        required: true
+      phone: 
+        type: string
+        required: true
+      
+
+/login:
+  post:
+    description: Authenticate user with email and password
+    body:
+      application/json:
+        type: user
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: Inicio de sesión correcto
+              token: Token
+      401:
+        body:
+          application/json:
+            example:
+              message: Correo no registrado en la base de datos
+      401:
+        body:
+          application/json:
+            example:
+              message: Contraseña incorrecta
+    
+
+/new:
+  post:
+    description: Create a new user
+    body:
+      application/json:
+        type: user
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: Usuario creado correctamente
+      400:
+        body:
+          application/json:
+            example:
+              message: El correo ya está en uso
+
+/me:
+  post:
+    description: Get the user's data
+    headers:
+      Authorization:
+        type: string
+    securedBy: jwt
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: Acceso autorizado
+              authData:
+                email: test@test.com
+                pass: pass
+                uid: 123
+      401:
+        body:
+          application/json:
+            example:
+              message: Acceso denegado
+
+/update:
+  post:
+    description: Update the user's data
+    headers:
+      Authorization:
+        type: string
+    securedBy: jwt
+    body:
+      application/json:
+        type: user
+    responses:
+      200:
+        body:
+          application/json:
+            example:
+              message: Usuario actualizado correctamente
+              token: token
+      401:
+        body:
+          application/json:
+            example:
+              message: Acceso denegado
+    
